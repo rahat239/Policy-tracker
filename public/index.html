@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WatchDiff — Website Change Monitor for Teams</title>
+<meta name="description" content="Monitor any website, policy page, or document for changes. Get instant alerts with exact diffs showing what changed, when, and how. Trusted by compliance teams, legal departments, and procurement globally.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #18181f;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0f0f5;
+    --muted: #8888a0;
+    --accent: #7c6cf8;
+    --accent2: #a89ff8;
+    --accent-bg: rgba(124,108,248,0.12);
+    --green: #34d399;
+    --green-bg: rgba(52,211,153,0.1);
+    --red: #f87171;
+    --red-bg: rgba(248,113,113,0.1);
+    --amber: #fbbf24;
+    --amber-bg: rgba(251,191,36,0.1);
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+    --mono: 'DM Mono', monospace;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2rem;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    color: var(--text);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .logo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; display: inline-block; }
+
+  .nav-links { display: flex; align-items: center; gap: 2rem; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0.6rem 1.4rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #6a5ae0; transform: translateY(-1px); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border2);
+    color: var(--text);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-lg { padding: 0.85rem 2rem; font-size: 1rem; border-radius: var(--radius); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(124,108,248,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 0.35rem 1rem;
+    background: var(--accent-bg);
+    border: 1px solid rgba(124,108,248,0.3);
+    border-radius: 100px;
+    font-size: 0.8rem;
+    color: var(--accent2);
+    margin-bottom: 2rem;
+  }
+
+  .badge-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    max-width: 800px;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 560px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+  }
+
+  .hero-cta {
+    display: flex; gap: 1rem; align-items: center; justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .hero-trust {
+    margin-top: 3rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; justify-content: center;
+  }
+
+  .trust-item { display: flex; align-items: center; gap: 6px; }
+  .trust-icon { color: var(--green); font-size: 1rem; }
+
+  /* DEMO WIDGET */
+  .demo-section {
+    padding: 2rem 2rem 5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .demo-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .demo-header {
+    padding: 1rem 1.5rem;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .demo-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .demo-body { padding: 1.5rem; }
+
+  .diff-block {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .diff-line {
+    padding: 0.35rem 1rem;
+    display: flex; gap: 1rem;
+  }
+
+  .diff-line.removed { background: var(--red-bg); color: var(--red); }
+  .diff-line.added { background: var(--green-bg); color: var(--green); }
+  .diff-line.context { color: var(--muted); }
+
+  .diff-prefix { min-width: 16px; font-weight: 600; }
+
+  .alert-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 0.3rem 0.8rem;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  .alert-pill.change { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(251,191,36,0.25); }
+  .alert-pill.new { background: var(--green-bg); color: var(--green); border: 1px solid rgba(52,211,153,0.25); }
+  .alert-pill.removed { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+
+  /* SECTIONS */
+  section { padding: 5rem 2rem; }
+
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+
+  .section-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  h2 em { font-style: italic; color: var(--accent2); }
+
+  .section-sub {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+  }
+
+  /* FEATURES */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .feature-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    transition: border-color 0.2s;
+  }
+
+  .feature-card:hover { border-color: var(--border2); }
+
+  .feature-icon {
+    width: 44px; height: 44px;
+    background: var(--accent-bg);
+    border: 1px solid rgba(124,108,248,0.25);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+  /* HOW IT WORKS */
+  .steps { display: flex; flex-direction: column; gap: 0; max-width: 700px; }
+
+  .step {
+    display: flex; gap: 1.5rem;
+    position: relative;
+  }
+
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 19px; top: 44px;
+    width: 2px; height: calc(100% - 8px);
+    background: var(--border2);
+  }
+
+  .step-num {
+    width: 40px; height: 40px; min-width: 40px;
+    background: var(--accent-bg);
+    border: 1px solid rgba(124,108,248,0.4);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--accent2);
+    z-index: 1;
+  }
+
+  .step-content { padding-bottom: 2.5rem; }
+  .step-content h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .step-content p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+  /* PRICING */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 900px;
+  }
+
+  .price-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+  }
+
+  .price-card.featured {
+    border-color: rgba(124,108,248,0.5);
+    background: linear-gradient(135deg, rgba(124,108,248,0.08) 0%, var(--bg2) 100%);
+  }
+
+  .plan-badge {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    background: var(--accent-bg);
+    border: 1px solid rgba(124,108,248,0.3);
+    border-radius: 100px;
+    font-size: 0.75rem;
+    color: var(--accent2);
+    margin-bottom: 1rem;
+  }
+
+  .plan-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+
+  .plan-price {
+    font-family: var(--serif);
+    font-size: 2.8rem;
+    line-height: 1;
+    margin: 1rem 0 0.25rem;
+  }
+
+  .plan-price span { font-family: var(--sans); font-size: 1rem; color: var(--muted); }
+
+  .plan-desc { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; }
+
+  .plan-features { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.75rem; }
+
+  .plan-features li {
+    font-size: 0.88rem;
+    display: flex; align-items: flex-start; gap: 8px;
+    color: var(--muted);
+  }
+
+  .plan-features li .check { color: var(--green); flex-shrink: 0; margin-top: 2px; }
+
+  /* USE CASES */
+  .use-cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+
+  .use-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+  }
+
+  .use-card .use-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+  .use-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .use-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+
+  /* TESTIMONIALS */
+  .testimonials { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+
+  .testi-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+  }
+
+  .testi-quote { font-size: 0.92rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.25rem; font-style: italic; }
+
+  .testi-author { display: flex; align-items: center; gap: 10px; }
+
+  .testi-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--accent-bg);
+    border: 1px solid rgba(124,108,248,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 600; color: var(--accent2);
+  }
+
+  .testi-name { font-size: 0.88rem; font-weight: 600; }
+  .testi-role { font-size: 0.78rem; color: var(--muted); }
+
+  /* STATS */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 3rem;
+    color: var(--accent2);
+  }
+
+  .stat-label { font-size: 0.88rem; color: var(--muted); margin-top: 0.25rem; }
+
+  /* CTA SECTION */
+  .cta-section {
+    text-align: center;
+    background: linear-gradient(135deg, rgba(124,108,248,0.1) 0%, transparent 60%);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .footer-links { display: flex; gap: 2rem; }
+  .footer-links a { font-size: 0.85rem; color: var(--muted); text-decoration: none; }
+  .footer-links a:hover { color: var(--text); }
+
+  /* FORM */
+  .signup-form {
+    display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .signup-form input {
+    padding: 0.75rem 1.25rem;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    width: 280px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .signup-form input:focus { border-color: var(--accent); }
+  .signup-form input::placeholder { color: var(--muted); }
+
+  /* URL monitor demo */
+  .monitor-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.85rem 1rem;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+  }
+
+  .monitor-url { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .monitor-status { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; white-space: nowrap; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .status-dot.changed { background: var(--amber); animation: pulse 1.5s infinite; }
+  .status-dot.ok { background: var(--green); }
+  .monitor-time { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+
+  @media (max-width: 600px) {
+    nav { padding: 1rem; }
+    .nav-links { display: none; }
+    h1 { font-size: 2.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">
+    <span class="logo-dot"></span>
+    WatchDiff
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#usecases">Use cases</a>
+  </div>
+  <a href="#pricing" class="btn btn-primary">Start free trial</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="badge">
+    <span class="badge-dot"></span>
+    Monitoring 12,400+ pages for compliance teams worldwide
+  </div>
+  <h1>Know the <em>exact moment</em> any page changes</h1>
+  <p class="hero-sub">Monitor vendor terms, regulations, competitor pricing, and compliance documents. Get instant alerts with precise diffs — no more manual checking.</p>
+  <div class="hero-cta">
+    <a href="#pricing" class="btn btn-primary btn-lg">Start monitoring free →</a>
+    <a href="#how" class="btn btn-outline btn-lg">See how it works</a>
+  </div>
+  <div class="hero-trust">
+    <div class="trust-item"><span class="trust-icon">✓</span> No credit card required</div>
+    <div class="trust-item"><span class="trust-icon">✓</span> 5 URLs free forever</div>
+    <div class="trust-item"><span class="trust-icon">✓</span> Email alerts in minutes</div>
+    <div class="trust-item"><span class="trust-icon">✓</span> Cancel anytime</div>
+  </div>
+</section>
+
+<!-- DEMO WIDGET -->
+<div class="demo-section">
+  <div class="demo-card">
+    <div class="demo-header">
+      <div class="demo-dot" style="background:#ff5f57"></div>
+      <div class="demo-dot" style="background:#febc2e"></div>
+      <div class="demo-dot" style="background:#28c840"></div>
+      <span style="font-size:0.8rem; color:var(--muted); margin-left:8px;">WatchDiff Dashboard</span>
+    </div>
+    <div class="demo-body">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
+        <h3 style="font-size:0.95rem;">Monitored Pages</h3>
+        <div style="display:flex;gap:8px;">
+          <span class="alert-pill change">⚠ 2 changed</span>
+          <span class="alert-pill new">● 8 ok</span>
+        </div>
+      </div>
+
+      <div class="monitor-row">
+        <div class="monitor-url">stripe.com/legal/ssa</div>
+        <div class="monitor-status"><span class="status-dot changed"></span><span style="color:var(--amber)">Changed</span></div>
+        <div class="monitor-time">2 hrs ago</div>
+        <span class="alert-pill change" style="font-size:0.72rem; padding:0.2rem 0.6rem;">View diff →</span>
+      </div>
+
+      <div class="monitor-row">
+        <div class="monitor-url">gdpr.eu/privacy-policy</div>
+        <div class="monitor-status"><span class="status-dot changed"></span><span style="color:var(--amber)">Changed</span></div>
+        <div class="monitor-time">5 hrs ago</div>
+        <span class="alert-pill change" style="font-size:0.72rem; padding:0.2rem 0.6rem;">View diff →</span>
+      </div>
+
+      <div class="monitor-row">
+        <div class="monitor-url">aws.amazon.com/service-terms</div>
+        <div class="monitor-status"><span class="status-dot ok"></span><span style="color:var(--green)">No change</span></div>
+        <div class="monitor-time">1 hr ago</div>
+      </div>
+
+      <div class="monitor-row">
+        <div class="monitor-url">notion.so/terms</div>
+        <div class="monitor-status"><span class="status-dot ok"></span><span style="color:var(--green)">No change</span></div>
+        <div class="monitor-time">1 hr ago</div>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+          <span style="font-size:0.85rem; font-weight:600;">Latest change — stripe.com/legal/ssa</span>
+          <span style="font-size:0.75rem; color:var(--muted);">Section 4.2 · Liability</span>
+        </div>
+        <div class="diff-block">
+          <div class="diff-line context"><span class="diff-prefix"> </span><span>4.1 Stripe's liability under this agreement...</span></div>
+          <div class="diff-line removed"><span class="diff-prefix">−</span><span>Stripe's maximum liability shall not exceed $500 per incident</span></div>
+          <div class="diff-line added"><span class="diff-prefix">+</span><span>Stripe's maximum liability shall not exceed $100 per incident</span></div>
+          <div class="diff-line context"><span class="diff-prefix"> </span><span>4.3 This limitation applies to all claims...</span></div>
+        </div>
+        <div style="margin-top:0.75rem; font-size:0.8rem; color:var(--muted);">📧 Alert sent to legal@company.com · Slack #compliance · 2 hrs ago</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<section style="padding: 3rem 2rem;">
+  <div class="section-inner">
+    <div class="stats-row">
+      <div>
+        <div class="stat-num">12k+</div>
+        <div class="stat-label">Pages monitored daily</div>
+      </div>
+      <div>
+        <div class="stat-num">4min</div>
+        <div class="stat-label">Average alert time</div>
+      </div>
+      <div>
+        <div class="stat-num">98.9%</div>
+        <div class="stat-label">Uptime guarantee</div>
+      </div>
+      <div>
+        <div class="stat-num">340+</div>
+        <div class="stat-label">Teams worldwide</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" style="border-top:1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-label">Features</div>
+    <h2>Everything your team needs to <em>stay informed</em></h2>
+    <p class="section-sub">Built for compliance, legal, and procurement teams who need reliable, auditable change detection.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Precise diff detection</h3>
+        <p>See exactly what changed — word by word, line by line. Color-coded additions and removals with full context around each change.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Real-time alerts</h3>
+        <p>Get notified within minutes of any change via email, Slack, or webhook. Never miss a critical policy update again.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Full change history</h3>
+        <p>Every version of every page, stored forever. Compare any two dates. Export for audits and legal documentation.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Audit trail</h3>
+        <p>Legally defensible timestamped records of every change. Know exactly when a policy changed and what the previous version said.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3>Team collaboration</h3>
+        <p>Share monitors with your whole team. Assign alerts to specific people. Leave notes on changes for context.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌍</div>
+        <h3>Monitor anything</h3>
+        <p>Any public URL — vendor contracts, regulatory pages, competitor pricing, government policies. No limits on page type.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="border-top:1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-label">How it works</div>
+    <h2>Up and running in <em>3 minutes</em></h2>
+    <p class="section-sub">No technical setup. No browser extensions. Just paste URLs and we handle everything.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h3>Add URLs to monitor</h3>
+          <p>Paste any public URL — a vendor's terms of service, a regulatory page, a competitor's pricing page. Set how often you want us to check it (hourly, daily, weekly).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h3>We watch it around the clock</h3>
+          <p>Our system checks every URL on your schedule. We store a full snapshot each time so we can compare versions precisely.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h3>Get alerted the moment anything changes</h3>
+          <p>The instant we detect a change, we send you an alert with the exact diff — what was removed (in red) and what was added (in green). No noise, just signal.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h3>Review, annotate, and share</h3>
+          <p>Open the change in your dashboard, leave notes for your team, and export the diff for your audit trail. Full history kept forever.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section id="usecases" style="border-top:1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-label">Use cases</div>
+    <h2>Trusted by teams who <em>can't afford to miss</em> changes</h2>
+    <p class="section-sub">When a policy changes without warning, the cost can be enormous. WatchDiff keeps you ahead of it.</p>
+
+    <div class="use-cases">
+      <div class="use-card">
+        <div class="use-icon">⚖️</div>
+        <h3>Legal & Compliance</h3>
+        <p>Monitor GDPR, CCPA, and industry regulations. Know the moment new requirements affect your business.</p>
+      </div>
+      <div class="use-card">
+        <div class="use-icon">📦</div>
+        <h3>Procurement</h3>
+        <p>Track vendor terms of service. Catch liability changes, pricing updates, and SLA modifications before renewal.</p>
+      </div>
+      <div class="use-card">
+        <div class="use-icon">🏦</div>
+        <h3>Financial Services</h3>
+        <p>Monitor regulatory authority pages, central bank announcements, and financial policy documents.</p>
+      </div>
+      <div class="use-card">
+        <div class="use-icon">🏥</div>
+        <h3>Healthcare</h3>
+        <p>Track FDA guidance, insurance policy pages, and clinical protocol documents for any updates.</p>
+      </div>
+      <div class="use-card">
+        <div class="use-icon">💼</div>
+        <h3>Strategy & Intel</h3>
+        <p>Monitor competitor pricing pages, product pages, and announcements. Stay ahead of market moves.</p>
+      </div>
+      <div class="use-card">
+        <div class="use-icon">🏗️</div>
+        <h3>Operations</h3>
+        <p>Track supplier websites, logistics partners, and service provider status pages. Know before your customers do.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="border-top:1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-label">Testimonials</div>
+    <h2>Teams who sleep better <em>because of WatchDiff</em></h2>
+
+    <div class="testimonials">
+      <div class="testi-card">
+        <p class="testi-quote">"We caught a major liability cap change in our primary vendor's ToS 3 days before our contract renewal. Saved us a renegotiation nightmare."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">SK</div>
+          <div>
+            <div class="testi-name">Sarah K.</div>
+            <div class="testi-role">Head of Procurement, SaaS company</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <p class="testi-quote">"Our compliance team was manually checking 40+ regulatory pages every week. WatchDiff gave us back 6 hours a week and eliminated human error."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">MP</div>
+          <div>
+            <div class="testi-name">Marcus P.</div>
+            <div class="testi-role">Compliance Director, FinTech</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <p class="testi-quote">"The diff view is incredible. Within seconds of the alert I can see exactly what changed and forward it directly to our legal team with full context."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">JL</div>
+          <div>
+            <div class="testi-name">Jennifer L.</div>
+            <div class="testi-role">General Counsel, Healthcare startup</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="border-top:1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-label">Pricing</div>
+    <h2>Simple pricing, <em>no surprises</em></h2>
+    <p class="section-sub">Start free. Upgrade when you need more. Cancel anytime. All plans include our core diff engine.</p>
+
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">$0 <span>/ month</span></div>
+        <div class="plan-desc">Perfect for individuals and small teams getting started.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> 5 monitored URLs</li>
+          <li><span class="check">✓</span> Daily checks</li>
+          <li><span class="check">✓</span> Email alerts</li>
+          <li><span class="check">✓</span> 30-day history</li>
+          <li><span class="check">✓</span> Basic diff view</li>
+        </ul>
+        <a href="#signup" class="btn btn-outline" style="width:100%; justify-content:center;">Get started free</a>
+      </div>
+
+      <div class="price-card featured">
+        <div class="plan-badge">Most popular</div>
+        <div class="plan-name">Professional</div>
+        <div class="plan-price">$29 <span>/ month</span></div>
+        <div class="plan-desc">For compliance teams and procurement professionals.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> 50 monitored URLs</li>
+          <li><span class="check">✓</span> Hourly checks</li>
+          <li><span class="check">✓</span> Email + Slack alerts</li>
+          <li><span class="check">✓</span> Unlimited history</li>
+          <li><span class="check">✓</span> Full diff + annotations</li>
+          <li><span class="check">✓</span> Team sharing (5 seats)</li>
+          <li><span class="check">✓</span> CSV/PDF export</li>
+        </ul>
+        <a href="#signup" class="btn btn-primary" style="width:100%; justify-content:center;">Start 14-day free trial</a>
+      </div>
+
+      <div class="price-card">
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price">$99 <span>/ month</span></div>
+        <div class="plan-desc">For legal departments and large procurement teams.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Unlimited URLs</li>
+          <li><span class="check">✓</span> Real-time checks (15 min)</li>
+          <li><span class="check">✓</span> Email + Slack + Webhook</li>
+          <li><span class="check">✓</span> Unlimited history</li>
+          <li><span class="check">✓</span> Audit-ready exports</li>
+          <li><span class="check">✓</span> Unlimited seats</li>
+          <li><span class="check">✓</span> Priority support</li>
+          <li><span class="check">✓</span> SSO / SAML</li>
+        </ul>
+        <a href="#signup" class="btn btn-outline" style="width:100%; justify-content:center;">Start 14-day free trial</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="signup">
+  <div class="section-inner" style="text-align:center;">
+    <div class="section-label">Get started</div>
+    <h2>Start monitoring in <em>3 minutes</em></h2>
+    <p class="section-sub" style="margin: 0 auto 0;">No credit card required. 5 URLs free forever. Upgrade when you're ready.</p>
+    <div class="signup-form">
+      <input type="email" placeholder="your@company.com">
+      <a href="#" class="btn btn-primary btn-lg">Create free account →</a>
+    </div>
+    <p style="margin-top:1rem; font-size:0.8rem; color:var(--muted);">Join 340+ compliance and procurement teams worldwide</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="logo" style="font-size:1.1rem;">
+    <span class="logo-dot"></span>
+    WatchDiff
+  </a>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Status</a>
+    <a href="#">Contact</a>
+    <a href="#">Blog</a>
+  </div>
+  <p style="font-size:0.8rem; color:var(--muted);">© 2026 WatchDiff. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
