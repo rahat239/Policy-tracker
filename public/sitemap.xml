@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://watchdiff.online/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://watchdiff.online/blog</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://watchdiff.online/blog/monitor-vendor-terms-of-service</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://watchdiff.online/blog/gdpr-compliance-monitoring</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://watchdiff.online/blog/procurement-contract-monitoring</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://watchdiff.online/blog/competitor-price-monitoring</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://watchdiff.online/register</loc><priority>0.7</priority></url>
+</urlset>
