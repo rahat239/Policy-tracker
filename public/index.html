@@ -829,7 +829,7 @@
           <li><span class="check">✓</span> Team sharing (5 seats)</li>
           <li><span class="check">✓</span> CSV/PDF export</li>
         </ul>
-        <a href="/register" class="btn btn-primary" style="width:100%; justify-content:center;">Start 14-day free trial</a>
+        <a href="#" onclick="openCheckout('pri_01ksy799y55bavgbvmmv6enpkw')" class="btn btn-primary" style="width:100%; justify-content:center;">Start 14-day free trial</a>
       </div>
 
       <div class="price-card">
@@ -846,7 +846,7 @@
           <li><span class="check">✓</span> Priority support</li>
           <li><span class="check">✓</span> SSO / SAML</li>
         </ul>
-        <a href="/register" class="btn btn-outline" style="width:100%; justify-content:center;">Start 14-day free trial</a>
+        <a href="#" onclick="openCheckout('pri_01ksy7hbfdc77kt09q6batyg2a')" class="btn btn-outline" style="width:100%; justify-content:center;">Start 14-day free trial</a>
       </div>
     </div>
   </div>
@@ -882,12 +882,11 @@
   <p style="font-size:0.8rem; color:var(--muted);">© 2026 WatchDiff. All rights reserved.</p>
 </footer>
 
-</body>
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script><script>Paddle.Setup({token:"live_3358823fdc3d871c516842354ab"});function openCheckout(p){Paddle.Checkout.open({items:[{priceId:p,quantity:1}]});}</script></body>
 </html>
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
 Paddle.Setup({ token: 'live_3358823fdc3d871c516842354ab' });
-function openCheckout(priceId) {
   Paddle.Checkout.open({
     items: [{ priceId: priceId, quantity: 1 }]
   });
